@@ -16,6 +16,13 @@ class WhisperService:
 
         if cls._model is None:
 
+            print("=" * 60)
+            print("LOADING WHISPER MODEL...")
+            print(f"Model        : {WHISPER_MODEL}")
+            print(f"Device       : {DEVICE}")
+            print(f"Compute Type : {COMPUTE_TYPE}")
+            print("=" * 60)
+
             cls._model = WhisperModel(
 
                 WHISPER_MODEL,
@@ -25,6 +32,8 @@ class WhisperService:
                 compute_type=COMPUTE_TYPE
 
             )
+
+            print("Whisper model loaded successfully.\n")
 
         return cls._model
 

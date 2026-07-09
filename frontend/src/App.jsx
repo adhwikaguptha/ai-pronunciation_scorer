@@ -16,11 +16,26 @@ function App() {
 
     <div className="container">
 
-      <h1> AI Pronunciation Analyzer</h1>
+      <h1>AI Pronunciation Analyzer</h1>
 
       <p className="subtitle">
-        Upload a 30–45 second English audio clip and compare it with the reference text.
+        Upload an English audio clip and compare it with the reference text using AI-powered pronunciation analysis.
       </p>
+
+      <div className="card">
+
+        <h2>📌 Audio Requirements</h2>
+
+        <ul>
+          <li><strong>Duration:</strong> 30–45 seconds</li>
+          <li><strong>Language:</strong> English</li>
+          <li><strong>Supported Formats:</strong> WAV, MP3, M4A, OGG, OGA, OPUS, FLAC, WEBM</li>
+          <li><strong>Reference Text:</strong> The spoken audio should match the text entered in the Reference Text field.</li>
+          <li><strong>Recording Quality:</strong> Record in a quiet environment and speak clearly for the best pronunciation analysis.</li>
+          <li><strong>Privacy:</strong> Uploaded audio is processed only for analysis and is automatically deleted after processing.</li>
+        </ul>
+
+      </div>
 
       <UploadAudio setResult={setResult} />
 

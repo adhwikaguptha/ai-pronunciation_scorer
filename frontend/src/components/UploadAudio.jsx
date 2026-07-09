@@ -5,6 +5,7 @@ function UploadAudio({ setResult }) {
   const [audio, setAudio] = useState(null);
   const [referenceText, setReferenceText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,19 +21,43 @@ function UploadAudio({ setResult }) {
     }
 
     const formData = new FormData();
-
     formData.append("audio", audio);
     formData.append("reference_text", referenceText);
 
     try {
       setLoading(true);
+      setResult(null);
+
+      setStatus("📤 Uploading audio...");
+
+      const timer1 = setTimeout(() => {
+        setStatus("✔ Upload complete\n🎵 Validating and preparing audio...");
+      }, 1000);
+
+      const timer2 = setTimeout(() => {
+        setStatus("🤖 Running AI speech recognition...");
+      }, 3000);
+
+      const timer3 = setTimeout(() => {
+        setStatus("📊 Evaluating pronunciation...");
+      }, 8000);
+
+      const timer4 = setTimeout(() => {
+        setStatus("📝 Generating personalized feedback...");
+      }, 12000);
 
       const result = await analyzePronunciation(formData);
+
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+
+      setStatus("✅ Analysis complete!");
 
       setResult(result);
     } catch (error) {
       console.error(error);
-
       alert("Error analyzing pronunciation.");
     } finally {
       setLoading(false);
@@ -63,6 +88,13 @@ function UploadAudio({ setResult }) {
         <button type="submit" disabled={loading}>
           {loading ? "Analyzing..." : "Analyze"}
         </button>
+
+        {loading && (
+          <div className="status-box">
+            <div className="spinner"></div>
+            <p style={{ whiteSpace: "pre-line" }}>{status}</p>
+          </div>
+        )}
 
       </form>
     </div>

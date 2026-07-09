@@ -1,4 +1,5 @@
 from pathlib import Path
+import time
 
 from app.services.audio_service import AudioService
 from app.services.whisper_service import WhisperService
@@ -11,6 +12,11 @@ class PronunciationService:
     @staticmethod
     async def analyze(audio_file, reference_text: str):
 
+        total_start = time.time()
+
+        print("=" * 60)
+        print("New Pronunciation Analysis Request")
+
         saved_file = await AudioService.save_audio(audio_file)
 
         wav_file = None
@@ -18,32 +24,46 @@ class PronunciationService:
         try:
 
             # -----------------------------------------
-            # Validate Audio Duration
+            # Duration Validation
             # -----------------------------------------
+
+            start = time.time()
 
             duration = AudioService.get_duration(saved_file)
 
             AudioService.validate_duration(duration)
 
+            print(f"Duration Validation : {time.time() - start:.2f} sec")
+
             # -----------------------------------------
-            # Convert Audio to WAV
+            # Audio Conversion
             # -----------------------------------------
+
+            start = time.time()
 
             wav_file = AudioService.convert_to_wav(saved_file)
 
+            print(f"WAV Conversion      : {time.time() - start:.2f} sec")
+
             # -----------------------------------------
-            # Speech-to-Text (Faster Whisper)
+            # Whisper
             # -----------------------------------------
 
+            start = time.time()
+
             whisper_result = WhisperService.transcribe(wav_file)
+
+            print(f"Whisper Inference   : {time.time() - start:.2f} sec")
 
             transcript = whisper_result["transcript"]
 
             word_details = whisper_result["words"]
 
             # -----------------------------------------
-            # Pronunciation Analysis
+            # Scoring
             # -----------------------------------------
+
+            start = time.time()
 
             score_result = ScoringService.calculate_word_score(
 
@@ -55,9 +75,13 @@ class PronunciationService:
 
             )
 
+            print(f"Scoring             : {time.time() - start:.2f} sec")
+
             # -----------------------------------------
-            # User Feedback
+            # Feedback
             # -----------------------------------------
+
+            start = time.time()
 
             feedback = FeedbackService.generate_feedback(
 
@@ -65,9 +89,11 @@ class PronunciationService:
 
             )
 
-            # -----------------------------------------
-            # API Response
-            # -----------------------------------------
+            print(f"Feedback            : {time.time() - start:.2f} sec")
+
+            print("-" * 60)
+            print(f"TOTAL REQUEST TIME  : {time.time() - total_start:.2f} sec")
+            print("=" * 60)
 
             return {
 
@@ -90,7 +116,6 @@ class PronunciationService:
 
                 "duration": round(duration, 2),
 
-                # Only words requiring attention
                 "analysis": score_result["analysis"],
 
                 "feedback": feedback
@@ -105,9 +130,9 @@ class PronunciationService:
 
                     AudioService.delete_file(saved_file)
 
-            except Exception:
+            except Exception as e:
 
-                pass
+                print(f"Cleanup Error (audio): {e}")
 
             try:
 
@@ -115,6 +140,6 @@ class PronunciationService:
 
                     AudioService.delete_file(wav_file)
 
-            except Exception:
+            except Exception as e:
 
-                pass
+                print(f"Cleanup Error (wav): {e}")

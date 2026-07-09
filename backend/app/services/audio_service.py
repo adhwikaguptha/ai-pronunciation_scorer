@@ -1,5 +1,6 @@
 from pathlib import Path
 from uuid import uuid4
+import time
 
 from fastapi import UploadFile, HTTPException
 from pydub import AudioSegment
@@ -11,29 +12,29 @@ from app.config import (
 )
 
 
-class AudioService:
+ALLOWED_EXTENSIONS = {
+    ".wav",
+    ".mp3",
+    ".m4a",
+    ".ogg",
+    ".oga",
+    ".opus",
+    ".flac",
+    ".webm"
+}
 
-    ALLOWED_EXTENSIONS = {
-        ".wav",
-        ".mp3",
-        ".m4a",
-        ".ogg",
-        ".flac",
-        ".webm"
-    }
+
+class AudioService:
 
     @staticmethod
     async def save_audio(file: UploadFile) -> Path:
         """
         Save uploaded audio to disk.
-
-        Returns:
-            Path to saved file.
         """
 
         extension = Path(file.filename).suffix.lower()
 
-        if extension not in AudioService.ALLOWED_EXTENSIONS:
+        if extension not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=400,
                 detail="Unsupported audio format."
@@ -56,7 +57,14 @@ class AudioService:
         Returns duration in seconds.
         """
 
+        start = time.time()
+
         audio = AudioSegment.from_file(file_path)
+
+        print(
+            f"get_duration -> AudioSegment.from_file: "
+            f"{time.time() - start:.2f} sec"
+        )
 
         duration = len(audio) / 1000
 
@@ -87,13 +95,27 @@ class AudioService:
         Whisper performs best with WAV.
         """
 
+        start = time.time()
+
         audio = AudioSegment.from_file(file_path)
 
+        print(
+            f"convert_to_wav -> AudioSegment.from_file: "
+            f"{time.time() - start:.2f} sec"
+        )
+
         wav_path = file_path.with_suffix(".wav")
+
+        start = time.time()
 
         audio.export(
             wav_path,
             format="wav"
+        )
+
+        print(
+            f"convert_to_wav -> Export WAV: "
+            f"{time.time() - start:.2f} sec"
         )
 
         return wav_path
