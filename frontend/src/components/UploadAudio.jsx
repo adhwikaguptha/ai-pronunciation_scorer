@@ -24,27 +24,49 @@ function UploadAudio({ setResult }) {
     formData.append("audio", audio);
     formData.append("reference_text", referenceText);
 
+    let timer1, timer2, timer3, timer4, timer5;
+
     try {
       setLoading(true);
       setResult(null);
 
       setStatus("📤 Uploading audio...");
 
-      const timer1 = setTimeout(() => {
-        setStatus("✔ Upload complete\n🎵 Validating and preparing audio...");
+      timer1 = setTimeout(() => {
+        setStatus(
+          "✔ Upload complete\n🎵 Validating and preparing audio..."
+        );
       }, 1000);
 
-      const timer2 = setTimeout(() => {
-        setStatus("🤖 Running AI speech recognition...");
+      timer2 = setTimeout(() => {
+        setStatus(
+          "🤖 Running AI speech recognition..."
+        );
       }, 3000);
 
-      const timer3 = setTimeout(() => {
-        setStatus("📊 Evaluating pronunciation...");
+      timer3 = setTimeout(() => {
+        setStatus(
+          "📊 Evaluating pronunciation..."
+        );
       }, 8000);
 
-      const timer4 = setTimeout(() => {
-        setStatus("📝 Generating personalized feedback...");
+      timer4 = setTimeout(() => {
+        setStatus(
+          "📝 Generating personalized feedback..."
+        );
       }, 12000);
+
+      timer5 = setTimeout(() => {
+        setStatus(
+`🤖 AI is still processing your audio...
+
+Speech recognition is computationally intensive and may take up to 5 minutes depending on current server load.
+
+Please keep this page open while your pronunciation analysis is being generated.
+
+Thank you for your patience.`
+        );
+      }, 20000);
 
       const result = await analyzePronunciation(formData);
 
@@ -52,15 +74,36 @@ function UploadAudio({ setResult }) {
       clearTimeout(timer2);
       clearTimeout(timer3);
       clearTimeout(timer4);
+      clearTimeout(timer5);
 
       setStatus("✅ Analysis complete!");
 
       setResult(result);
+
     } catch (error) {
+
       console.error(error);
-      alert("Error analyzing pronunciation.");
+
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
+
+      if (error.response?.data?.detail) {
+        alert(error.response.data.detail);
+      } else if (error.request) {
+        alert(
+          "Unable to connect to the server. Please try again later."
+        );
+      } else {
+        alert(error.message);
+      }
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
@@ -92,7 +135,9 @@ function UploadAudio({ setResult }) {
         {loading && (
           <div className="status-box">
             <div className="spinner"></div>
-            <p style={{ whiteSpace: "pre-line" }}>{status}</p>
+            <p style={{ whiteSpace: "pre-line" }}>
+              {status}
+            </p>
           </div>
         )}
 
