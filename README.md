@@ -5,10 +5,9 @@ An AI-powered web application that evaluates English pronunciation by comparing 
 ---
 
 ## Live Demo
+https://ai-pronunciation-scorer-git-main-adhwikas-projects.vercel.app/
 
-**Frontend:** https://YOUR-VERCEL-URL.vercel.app
-
-**Backend:** https://YOUR-RENDER-URL.onrender.com
+**Backend:** https://ai-pronunciation-scorer.onrender.com
 
 ---
 
