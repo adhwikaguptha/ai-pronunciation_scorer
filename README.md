@@ -30,37 +30,7 @@ Pydub
 FFmpeg
 RapidFuzz
 Python
-System Architecture
-                    User
-                      │
-                      ▼
-            React (Vite Frontend)
-                      │
-         Upload Audio + Reference Text
-                      │
-                 REST API (HTTP)
-                      │
-                      ▼
-             FastAPI Backend
-                      │
-     ┌────────────────┼────────────────┐
-     │                │                │
-     ▼                ▼                ▼
-Audio Service   Whisper Service  Scoring Service
-     │                │                │
-Validate Audio   Speech-to-Text   Word Comparison
-Convert to WAV  Faster-Whisper    Score Generation
-     │                │                │
-     └────────────────┼────────────────┘
-                      │
-                      ▼
-             Feedback Service
-                      │
-                      ▼
-                JSON Response
-                      │
-                      ▼
-              React Frontend
+
 Supported Audio Formats
 WAV
 MP3
